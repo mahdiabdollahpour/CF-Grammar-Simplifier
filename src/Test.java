@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * Created by ASUS on 19/05/2018.
  */
-public class Main {
+public class Test {
     public static void main(String[] args) {
 
         Production p = new Production("S", "aS", "TV");
@@ -19,9 +19,7 @@ public class Main {
         productions.add(p4);
         productions.add(p5);
         productions.add(p6);
-        CFGrammar g = new CFGrammar("SABC", "ab", 0, productions);
-        Simplifier.removeUseless(g);
-        // System.out.println(g.toString());
-
+        CFGrammar g = new CFGrammar("S,A,B,C", "a,b", 0, productions);
+        System.out.println(Simplifier.removeUseless(g).toString());
     }
 }

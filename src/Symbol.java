@@ -3,9 +3,21 @@
  */
 public abstract class Symbol {
 
-    public char charSymbol;
+    public String sign;
 
     public String toString() {
-        return String.valueOf(charSymbol);
+        return sign;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Symbol symbol = (Symbol) o;
+
+        return sign.equals(symbol.sign);
+    }
+
+
 }
