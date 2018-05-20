@@ -13,11 +13,11 @@ public class Simplifier {
         boolean wasAdd = true;
 
         while (wasAdd) {
-            //  System.out.println("cnt");
+
             wasAdd = false;
             for (int idx = 0; idx < g.getProductions().size(); idx++) {
                 Production p = g.getProductions().get(idx);
-                //   System.out.println(p);
+
                 ArrayList<Symbol> right = p.rightsides;
                 boolean allOk = true;
                 for (int i = 0; i < right.size(); i++) {
@@ -40,21 +40,24 @@ public class Simplifier {
 
 
         }
-        //   System.out.println(v1);
-        ArrayList<Variable> v2 = new ArrayList<>();
+
+        ArrayList<Variable> reachable = new ArrayList<>();
+        reachable.add(g.getVariable().get(g.getStart()));
         ArrayList<Production> gproductions = g.getProductions();
         for (int i = 0; i < v1.size(); i++) {
             Variable symbol = v1.get(i);
             for (int i1 = 0; i1 < gproductions.size(); i1++) {
                 Production p = gproductions.get(i1);
-                if (p.rightsides.contains(symbol)) {
-                    if (!v2.contains(symbol)) {
-                        v2.add(symbol);
+                if (reachable.contains(p.leftside)) {
+                    if (p.rightsides.contains(symbol)) {
+                        if (!reachable.contains(symbol)) {
+                            reachable.add(symbol);
+                        }
                     }
                 }
             }
         }
-        v1 = v2;
+        v1 = reachable;
         ArrayList<Production> productions = new ArrayList<>();
         for (int i = 0; i < gproductions.size(); i++) {
             Production p = gproductions.get(i);
@@ -75,9 +78,94 @@ public class Simplifier {
                 productions.add(p);
             }
         }
-        //   System.out.println(productions);
-        //  System.out.println(g.getTerminal());
         return new CFGrammar(v1, g.getTerminal(), v1.indexOf(g.getVariable().get(g.getStart())), productions);
+
+    }
+
+    public static CFGrammar removeLambdaProduction(CFGrammar g) {
+        ArrayList<Variable> vn = new ArrayList<>();
+
+        ArrayList<Production> productions = g.getProductions();
+        for (int i = 0; i < productions.size(); i++) {
+            Production p = productions.get(i);
+            if (p.rightsides.size() == 1) {
+                if (p.rightsides.get(0) instanceof Lambda) {
+                    vn.add(p.leftside);
+                }
+            }
+        }
+
+
+        boolean wasAdded = true;
+        while (wasAdded) {
+            wasAdded = false;
+            for (int i = 0; i < productions.size(); i++) {
+                Production p = productions.get(i);
+                boolean shouldAdd = true;
+                for (int i1 = 0; i1 < p.rightsides.size(); i1++) {
+                    Symbol symbol = p.rightsides.get(i1);
+                    if (!(symbol instanceof Variable) && !vn.contains(symbol)) {
+                        shouldAdd = false;
+                        break;
+                    }
+                }
+                if (shouldAdd) {
+                    if (!vn.contains(p.leftside)) {
+                        vn.add(p.leftside);
+                        wasAdded = true;
+                    }
+                }
+
+            }
+
+
+        }
+        ArrayList<Production> newProductions = new ArrayList<>();
+        for (int i = 0; i < productions.size(); i++) {
+
+            ArrayList<Production> productions1 = generateProductionsDriver(vn, productions.get(i));
+            for (Production production : productions1) {
+                newProductions.add(production);
+            }
+        }
+        return  new CFGrammar(g.getVariable(), g.getTerminal(), g.getStart(), newProductions);
+
+    }
+
+    private static ArrayList<ArrayList<Symbol>> rightSides = null;
+
+    private static ArrayList<Production> generateProductionsDriver(final ArrayList<Variable> vn, final Production p) {
+        rightSides = new ArrayList<>();
+        generateProductionsWorkHorse(vn, p, new ArrayList<>(), 0);
+        ArrayList<Production> productions = new ArrayList<>();
+        for (int i = 0; i < rightSides.size(); i++) {
+            productions.add(new Production(p.leftside, rightSides.get(i)));
+        }
+        return productions;
+    }
+
+    private static void generateProductionsWorkHorse(final ArrayList<Variable> vn, final Production p, ArrayList<Symbol> tillnow, int now) {
+        if (now < p.rightsides.size()) {
+            Symbol symbol = p.rightsides.get(now);
+            if (symbol instanceof Terminal) {
+                tillnow.add(symbol);
+                generateProductionsWorkHorse(vn, p, tillnow, now + 1);
+            } else if (symbol instanceof Variable) {
+                if (vn.contains(symbol)) {
+                    ArrayList<Symbol> arr1 = (ArrayList<Symbol>) tillnow.clone();
+
+                    generateProductionsWorkHorse(vn, p, arr1, now + 1);
+                }
+                tillnow.add(symbol);
+                generateProductionsWorkHorse(vn, p, tillnow, now + 1);
+            }
+            // we add nothing for Lambdas
+        } else { // now = len
+            if (tillnow.size() != 0) {
+                rightSides.add(tillnow);
+            }
+        }
+
 
     }
 

@@ -5,10 +5,10 @@ import java.util.ArrayList;
  */
 
 public class Production {
-    Symbol leftside;
+    Variable leftside;
     ArrayList<Symbol> rightsides;
 
-    public Production(Symbol left, ArrayList<Symbol> rightsides) {
+    public Production(Variable left, ArrayList<Symbol> rightsides) {
         this.leftside = left;
         this.rightsides = rightsides;
     }
@@ -18,13 +18,14 @@ public class Production {
         leftside = new Variable(left);
 
         rightsides = new ArrayList<>();
-        for (int j = 0; j < right.length(); j++) {
-            char sym = right.charAt(j);
+        String[] r = right.split(",");
+        for (int j = 0; j < r.length; j++) {
+            String sym = r[j];
             if (rightPattern.charAt(j) == 'T') {
-                rightsides.add(new Terminal(Character.toString(sym)));
+                rightsides.add(new Terminal(sym));
             } else if (rightPattern.charAt(j) == 'V') {
 
-                rightsides.add(new Variable(Character.toString(sym)));
+                rightsides.add(new Variable(sym));
             } else {
                 rightsides.add(new Lambda());
 

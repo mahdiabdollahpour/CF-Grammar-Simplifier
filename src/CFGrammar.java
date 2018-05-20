@@ -50,11 +50,7 @@ public class CFGrammar {
     private ArrayList<Terminal> terminal;
     private ArrayList<Production> productions;
 
-    public CFGrammar() {
-        variable = new ArrayList<>();
-        terminal = new ArrayList<>();
-        productions = new ArrayList<>();
-    }
+
 
 
     int start;
@@ -64,7 +60,7 @@ public class CFGrammar {
         String s = "Variables : " + variable.toString() + ", Terminals : " + terminal.toString() + ", start : " + variable.get(start) + "\n" + "Productions : ";
         for (int i = 0; i < productions.size(); i++) {
             //   System.out.println("hi");
-            s = s + "\n" + productions.get(i).toString() + "\n";
+            s = s + "\n" + productions.get(i).toString();
         }
         return s;
     }
