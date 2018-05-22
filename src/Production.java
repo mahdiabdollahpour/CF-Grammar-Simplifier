@@ -34,6 +34,17 @@ public class Production {
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Production that = (Production) o;
+
+        if (leftside != null ? !leftside.equals(that.leftside) : that.leftside != null) return false;
+        return rightsides != null ? rightsides.equals(that.rightsides) : that.rightsides == null;
+    }
+
 
     public String toString() {
         String s = "";

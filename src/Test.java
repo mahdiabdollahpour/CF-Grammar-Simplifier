@@ -6,7 +6,8 @@ import java.util.ArrayList;
 public class Test {
     public static void main(String[] args) {
 
-        test2();
+        test3();
+     //   test2();
         //       test1();
     }
 
@@ -51,6 +52,28 @@ public class Test {
         productions.add(p6);
         CFGrammar g = new CFGrammar("S,A,B,C", "a,b", 0, productions);
         System.out.println(Simplifier.removeUseless(g).toString());
+
+    }
+
+    static void test3() {
+        Production p = new Production("S", "A,a", "VT");
+        Production p2 = new Production("S", "B", "V");
+        Production p3 = new Production("B", "A", "V");
+        Production p4 = new Production("B", "b,b", "TT");
+        Production p5 = new Production("A", "a", "T");
+        Production p6 = new Production("A", "b,c", "TT");
+        Production p7 = new Production("A", "B", "V");
+        ArrayList<Production> productions = new ArrayList<>();
+        productions.add(p);
+        productions.add(p2);
+        productions.add(p3);
+        productions.add(p4);
+        productions.add(p5);
+        productions.add(p6);
+        productions.add(p7);
+        CFGrammar g = new CFGrammar("S,A,B", "a,b,c", 0, productions);
+        System.out.println(Simplifier.removeUnit(g));
+
 
     }
 }

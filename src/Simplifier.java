@@ -128,7 +128,7 @@ public class Simplifier {
                 newProductions.add(production);
             }
         }
-        return  new CFGrammar(g.getVariable(), g.getTerminal(), g.getStart(), newProductions);
+        return new CFGrammar(g.getVariable(), g.getTerminal(), g.getStart(), newProductions);
 
     }
 
@@ -166,6 +166,74 @@ public class Simplifier {
             }
         }
 
+
+    }
+
+    public static CFGrammar removeUnit(CFGrammar g) {
+        ArrayList<Production> productions = g.getProductions();
+        ArrayList<Production> newProductions = new ArrayList<>();
+        ArrayList<Production> unitProductions = new ArrayList<>();
+        ArrayList<Variable> unitVars = new ArrayList<>();
+        for (int i = 0; i < productions.size(); i++) {
+            Production p = productions.get(i);
+            if (p.rightsides.size() != 1) {
+                newProductions.add(p);
+            } else {
+                if (p.rightsides.get(0) instanceof Terminal) {
+                    newProductions.add(p);
+
+                } else {
+                    unitProductions.add(p);
+                    unitVars.add(p.leftside);
+                }
+            }
+        }
+     //   System.out.println(unitProductions);
+        ArrayList<ArrayList<Variable>> AgoesTo = new ArrayList<>();
+
+
+        Graph graph = new Graph();
+        graph.FromProductions(unitProductions);
+
+        for (int i = 0; i < unitVars.size(); i++) {
+            Symbol symbol = unitVars.get(i);
+            AgoesTo.add(new ArrayList<>());
+            for (int i1 = 0; i1 < unitProductions.size(); i1++) {
+                Production p = unitProductions.get(i1);
+                if (graph.isPath(symbol, p.leftside)) {
+
+                    AgoesTo.get(i).add(p.leftside);
+                }
+
+
+            }
+        }
+
+
+        ArrayList<Production> created = new ArrayList<>();
+        for (int i = 0; i < unitVars.size(); i++) {
+            ArrayList<Variable> vars = AgoesTo.get(i);
+            for (int i1 = 0; i1 < vars.size(); i1++) {
+                Variable v = vars.get(i1);
+                for (int i2 = 0; i2 < newProductions.size(); i2++) {
+                    Production p = newProductions.get(i2);
+                    if (p.leftside.equals(v)) {
+                        Production pr = new Production(unitVars.get(i), p.rightsides);
+                        if (!created.contains(pr))
+                            created.add(pr);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < created.size(); i++) {
+            if (!newProductions.contains(created.get(i))) {
+                newProductions.add(created.get(i));
+            }
+        }
+
+
+        return new CFGrammar(g.getVariable(), g.getTerminal(), g.getStart(), newProductions);
 
     }
 
