@@ -3,10 +3,10 @@
  */
 public abstract class Symbol {
 
-    public String sign;
+    public char sign;
 
     public String toString() {
-        return sign;
+        return String.valueOf(sign);
     }
 
     @Override
@@ -15,8 +15,10 @@ public abstract class Symbol {
         if (o == null || getClass() != o.getClass()) return false;
 
         Symbol symbol = (Symbol) o;
-
-        return sign.equals(symbol.sign);
+        if (this instanceof Lambda && o instanceof Lambda) {
+            return true;
+        }
+        return sign == symbol.sign;
     }
 
 

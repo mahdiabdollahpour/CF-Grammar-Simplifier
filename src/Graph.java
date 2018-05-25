@@ -31,6 +31,13 @@ public class Graph {
 //        System.out.println(list);
 //        System.out.println(s + " ---- " + d);
         boolean[] mark = new boolean[list.size()];
+        if (indexes.indexOf(s) == -1) {
+            return false;
+        }
+        if (indexes.indexOf(d) == -1) {
+            return false;
+        }
+
         mark[indexes.indexOf(s)] = true;
         while (!q.isEmpty()) {
             //    System.out.println("in bfs");

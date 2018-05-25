@@ -104,7 +104,12 @@ public class Simplifier {
                 boolean shouldAdd = true;
                 for (int i1 = 0; i1 < p.rightsides.size(); i1++) {
                     Symbol symbol = p.rightsides.get(i1);
-                    if (!(symbol instanceof Variable) && !vn.contains(symbol)) {
+                    if ((symbol instanceof Variable)) {
+                        if (!vn.contains(symbol)) {
+                            shouldAdd = false;
+                            break;
+                        }
+                    } else if (symbol instanceof Terminal) {
                         shouldAdd = false;
                         break;
                     }
@@ -158,6 +163,8 @@ public class Simplifier {
                 }
                 tillnow.add(symbol);
                 generateProductionsWorkHorse(vn, p, tillnow, now + 1);
+            } else if (symbol instanceof Lambda) {
+                generateProductionsWorkHorse(vn, p, tillnow, now + 1);
             }
             // we add nothing for Lambdas
         } else { // now = len
@@ -182,13 +189,20 @@ public class Simplifier {
                 if (p.rightsides.get(0) instanceof Terminal) {
                     newProductions.add(p);
 
-                } else {
+                } else if (p.rightsides.get(0) instanceof Variable) {
                     unitProductions.add(p);
-                    unitVars.add(p.leftside);
+                    if (!unitVars.contains(p.leftside)) {
+                        unitVars.add(p.leftside);
+                    }
+                    if (!unitVars.contains(p.rightsides.get(0))) {
+                        unitVars.add((Variable) p.rightsides.get(0));
+                    }
                 }
             }
         }
-     //   System.out.println(unitProductions);
+        //System.out.println("unit productions");
+        // System.out.println(unitProductions);
+        //   System.out.println(unitProductions);
         ArrayList<ArrayList<Variable>> AgoesTo = new ArrayList<>();
 
 
@@ -198,8 +212,8 @@ public class Simplifier {
         for (int i = 0; i < unitVars.size(); i++) {
             Symbol symbol = unitVars.get(i);
             AgoesTo.add(new ArrayList<>());
-            for (int i1 = 0; i1 < unitProductions.size(); i1++) {
-                Production p = unitProductions.get(i1);
+            for (int i1 = 0; i1 < productions.size(); i1++) {
+                Production p = productions.get(i1);
                 if (graph.isPath(symbol, p.leftside)) {
 
                     AgoesTo.get(i).add(p.leftside);
@@ -208,6 +222,8 @@ public class Simplifier {
 
             }
         }
+        //System.out.println(unitVars);
+        //System.out.println(AgoesTo);
 
 
         ArrayList<Production> created = new ArrayList<>();
@@ -234,6 +250,17 @@ public class Simplifier {
 
 
         return new CFGrammar(g.getVariable(), g.getTerminal(), g.getStart(), newProductions);
+
+    }
+
+    public static CFGrammar simplify(CFGrammar g) {
+        CFGrammar g1 = removeLambdaProduction(g);
+        //System.out.println(g1);
+        CFGrammar g2 = removeUnit(g1);
+        //System.out.println(g2);
+        CFGrammar g3 = removeUseless(g2);
+        // System.out.println(g3);
+        return g3;
 
     }
 

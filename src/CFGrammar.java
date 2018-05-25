@@ -35,10 +35,10 @@ public class CFGrammar {
         String[] vars = variables.split(",");
         String[] terms = terminals.split(",");
         for (int i = 0; i < vars.length; i++) {
-            variable.add(new Variable(vars[i]));
+            variable.add(new Variable(vars[i].charAt(0)));
         }
         for (int i = 0; i < terms.length; i++) {
-            terminal.add(new Terminal(terms[i]));
+            terminal.add(new Terminal(terms[i].charAt(0)));
         }
 
 

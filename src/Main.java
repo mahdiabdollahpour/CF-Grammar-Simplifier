@@ -1,27 +1,44 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by ASUS on 19/05/2018.
  */
 public class Main {
     public static void main(String[] args) {
-
-        Production p = new Production("S", "aS", "TV");
-        Production p5 = new Production("S", "C", "V");
-        Production p6 = new Production("S", "A", "V");
-        Production p2 = new Production("A", "a", "T");
-        Production p3 = new Production("B", "aa", "TT");
-        Production p4 = new Production("C", "aCb", "TVT");
+        Scanner in = new Scanner(System.in);
+        String s = in.next();
         ArrayList<Production> productions = new ArrayList<>();
-        productions.add(p);
-        productions.add(p2);
-        productions.add(p3);
-        productions.add(p4);
-        productions.add(p5);
-        productions.add(p6);
-        CFGrammar g = new CFGrammar("SABC", "ab", 0, productions);
-        Simplifier.removeUseless(g);
-        // System.out.println(g.toString());
+        ArrayList<Variable> variables = new ArrayList<>();
+        ArrayList<Terminal> terminals = new ArrayList<>();
+        while (!s.equals("-1")) {
+       //     System.out.println("hi");
+            productions.add(new Production(s.charAt(0), s.substring(1, s.length())));
+            for (int i = 0; i < s.length(); i++) {
+                if(Character.isLowerCase(s.charAt(i)) && s.charAt(i)!='l'){
+                    Terminal t = new Terminal(s.charAt(i));
+                    if(!terminals.contains(t)){
+                        terminals.add(t);
+                    }
+                }else if(!Character.isLowerCase(s.charAt(i)) && s.charAt(i)!='l'){
+                    Variable v = new Variable(s.charAt(i));
+                    if(!variables.contains(v)){
+                        variables.add(v);
+                    }
+                }
+            }
+            s = in.next();
+        }
+
+        CFGrammar g = new CFGrammar(variables,terminals,0,productions);
+        System.out.println("the grammar :");
+        System.out.println(g);
+        System.out.println("-----------------------");
+        System.out.println("simplified :");
+        System.out.println(Simplifier.simplify(g));
+     //   System.out.println(Simplifier.removeUseless(g));
+
+
 
     }
 }
