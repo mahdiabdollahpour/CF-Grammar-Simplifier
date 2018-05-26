@@ -43,20 +43,10 @@ public class Simplifier {
         System.out.println("v1");
         System.out.println(v1);
 
-        ArrayList<Variable> reachable = new ArrayList<>();
-        // reachable.add(g.getVariable().get(g.getStart()));
-        ArrayList<Production> gproductions = g.getProductions();
 
-        Graph graph = new Graph();
-        graph.FromProductions(g.getProductions());
-        for (int i = 0; i < v1.size(); i++) {
-            if (graph.isPath(g.getVariable().get(g.start),v1.get(i))) {
-                reachable.add(v1.get(i));
-            }
-        }
-        //System.out.println("reachable");
-        //System.out.println(reachable);
-        v1 = reachable;
+        final ArrayList<Production> gproductions = g.getProductions();
+
+
         ArrayList<Production> productions = new ArrayList<>();
         for (int i = 0; i < gproductions.size(); i++) {
             Production p = gproductions.get(i);
@@ -77,7 +67,45 @@ public class Simplifier {
                 productions.add(p);
             }
         }
-        return new CFGrammar(v1, g.getTerminal(), v1.indexOf(g.getVariable().get(g.getStart())), productions);
+
+
+        ArrayList<Variable> reachable = new ArrayList<>();
+        // reachable.add(g.getVariable().get(g.getStart()));
+
+        Graph graph = new Graph();
+        graph.FromProductions(productions);
+        System.out.println(g.getVariable().get(g.start));
+        for (int i = 0; i < g.getVariable().size(); i++) {
+            if (graph.isPath(g.getVariable().get(g.start), g.getVariable().get(i))) {
+                reachable.add(g.getVariable().get(i));
+            }
+        }
+
+        ArrayList<Production> productions2 = new ArrayList<>();
+        for (int i = 0; i < productions.size(); i++) {
+            Production p = productions.get(i);
+            boolean canAdd = true;
+
+            if (reachable.contains(p.leftside)) {
+                ArrayList<Symbol> right = p.rightsides;
+                for (int j = 0; j < right.size(); j++) {
+                    if (right.get(j) instanceof Variable && !reachable.contains(right.get(j))) {
+                        canAdd = false;
+                        break;
+                    }
+                }
+            } else {
+                canAdd = false;
+            }
+            if (canAdd) {
+                productions2.add(p);
+            }
+        }
+
+
+
+
+        return new CFGrammar(v1, g.getTerminal(), v1.indexOf(g.getVariable().get(g.getStart())), productions2);
 
     }
 

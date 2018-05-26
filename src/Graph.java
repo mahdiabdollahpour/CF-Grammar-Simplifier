@@ -18,14 +18,19 @@ public class Graph {
                 list.add(new ArrayList<>());
             }
             for (int j = 0; j < p.rightsides.size(); j++) {
-
-                if (!indexes.contains(p.rightsides.get(j))) {
-                    indexes.add(p.rightsides.get(j));
-                    list.add(new ArrayList<>());
+                if ( p.rightsides.get(j) instanceof Variable){
+                    if (!indexes.contains(p.rightsides.get(j))) {
+                        indexes.add(p.rightsides.get(j));
+                        list.add(new ArrayList<>());
+                    }
+                    list.get(indexes.indexOf(p.leftside)).add(p.rightsides.get(j));
                 }
-                list.get(indexes.indexOf(p.leftside)).add(p.rightsides.get(j));
             }
         }
+        System.out.println("graph");
+        System.out.println(indexes);
+        System.out.println(list);
+        System.out.println("-----");
     }
 
     public boolean isPath(Symbol s, Symbol d) {
@@ -35,9 +40,11 @@ public class Graph {
 //        System.out.println(s + " ---- " + d);
         boolean[] mark = new boolean[list.size()];
         if (indexes.indexOf(s) == -1) {
+            System.out.println("hh");
             return false;
         }
         if (indexes.indexOf(d) == -1) {
+            System.out.println("dd");
             return false;
         }
 
