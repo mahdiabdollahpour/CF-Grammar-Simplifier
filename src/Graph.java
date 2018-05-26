@@ -17,11 +17,14 @@ public class Graph {
                 indexes.add(p.leftside);
                 list.add(new ArrayList<>());
             }
-            if (!indexes.contains(p.rightsides.get(0))) {
-                indexes.add(p.rightsides.get(0));
-                list.add(new ArrayList<>());
+            for (int j = 0; j < p.rightsides.size(); j++) {
+
+                if (!indexes.contains(p.rightsides.get(j))) {
+                    indexes.add(p.rightsides.get(j));
+                    list.add(new ArrayList<>());
+                }
+                list.get(indexes.indexOf(p.leftside)).add(p.rightsides.get(j));
             }
-            list.get(indexes.indexOf(p.leftside)).add(p.rightsides.get(0));
         }
     }
 

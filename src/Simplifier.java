@@ -32,7 +32,7 @@ public class Simplifier {
                 if (allOk) {
                     //   System.out.println("hi");
                     if (!v1.contains(p.leftside)) {
-                        v1.add((Variable) p.leftside);
+                        v1.add(p.leftside);
                         wasAdd = true;
                     }
                 }
@@ -40,23 +40,22 @@ public class Simplifier {
 
 
         }
+        System.out.println("v1");
+        System.out.println(v1);
 
         ArrayList<Variable> reachable = new ArrayList<>();
-        reachable.add(g.getVariable().get(g.getStart()));
+        // reachable.add(g.getVariable().get(g.getStart()));
         ArrayList<Production> gproductions = g.getProductions();
+
+        Graph graph = new Graph();
+        graph.FromProductions(g.getProductions());
         for (int i = 0; i < v1.size(); i++) {
-            Variable symbol = v1.get(i);
-            for (int i1 = 0; i1 < gproductions.size(); i1++) {
-                Production p = gproductions.get(i1);
-                if (reachable.contains(p.leftside)) {
-                    if (p.rightsides.contains(symbol)) {
-                        if (!reachable.contains(symbol)) {
-                            reachable.add(symbol);
-                        }
-                    }
-                }
+            if (graph.isPath(g.getVariable().get(g.start),v1.get(i))) {
+                reachable.add(v1.get(i));
             }
         }
+        //System.out.println("reachable");
+        //System.out.println(reachable);
         v1 = reachable;
         ArrayList<Production> productions = new ArrayList<>();
         for (int i = 0; i < gproductions.size(); i++) {
@@ -255,11 +254,11 @@ public class Simplifier {
 
     public static CFGrammar simplify(CFGrammar g) {
         CFGrammar g1 = removeLambdaProduction(g);
-        //System.out.println(g1);
+        //    System.out.println(g1);
         CFGrammar g2 = removeUnit(g1);
-        //System.out.println(g2);
+        //    System.out.println(g2);
         CFGrammar g3 = removeUseless(g2);
-        // System.out.println(g3);
+        //   System.out.println(g3);
         return g3;
 
     }
