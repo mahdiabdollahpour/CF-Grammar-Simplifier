@@ -7,60 +7,53 @@ import java.util.Queue;
  */
 
 public class Graph {
-    ArrayList<ArrayList<Symbol>> list = new ArrayList<>();
-    ArrayList<Symbol> indexes = new ArrayList<>();
+    ArrayList<Integer>[] list = new ArrayList[26];
+
+    public Graph() {
+        for (int i = 0; i < list.length; i++) {
+            list[i] = new ArrayList<>();
+        }
+    }
 
     public void FromProductions(ArrayList<Production> productions) {
         for (int i = 0; i < productions.size(); i++) {
             Production p = productions.get(i);
-            if (!indexes.contains(p.leftside)) {
-                indexes.add(p.leftside);
-                list.add(new ArrayList<>());
-            }
+            int s = p.leftside.sign - 65;
             for (int j = 0; j < p.rightsides.size(); j++) {
-                if ( p.rightsides.get(j) instanceof Variable){
-                    if (!indexes.contains(p.rightsides.get(j))) {
-                        indexes.add(p.rightsides.get(j));
-                        list.add(new ArrayList<>());
-                    }
-                    list.get(indexes.indexOf(p.leftside)).add(p.rightsides.get(j));
+                if (p.rightsides.get(j) instanceof Variable) {
+                    int d = p.rightsides.get(j).sign - 65;
+                    list[s].add(d);
+                  //  System.out.println(s + " has arc to " + d);
                 }
             }
         }
-        System.out.println("graph");
-        System.out.println(indexes);
-        System.out.println(list);
-        System.out.println("-----");
+
     }
 
-    public boolean isPath(Symbol s, Symbol d) {
-        Queue<Symbol> q = new LinkedList<>();
+    public boolean isPath(Symbol s1, Symbol d1) {
+        Queue<Integer> q = new LinkedList<>();
+        int s = s1.sign - 65;
+        int d = d1.sign - 65;
         q.add(s);
+
 //        System.out.println(list);
 //        System.out.println(s + " ---- " + d);
-        boolean[] mark = new boolean[list.size()];
-        if (indexes.indexOf(s) == -1) {
-            System.out.println("hh");
-            return false;
-        }
-        if (indexes.indexOf(d) == -1) {
-            System.out.println("dd");
-            return false;
-        }
+        boolean[] mark = new boolean[list.length];
 
-        mark[indexes.indexOf(s)] = true;
+
+        mark[s] = true;
         while (!q.isEmpty()) {
             //    System.out.println("in bfs");
-            Symbol now = q.poll();
-            if (now.equals(d)) {
+            int now = q.poll();
+            if (now == d) {
                 return true;
             }
-            for (int i = 0; i < list.get(indexes.indexOf(now)).size(); i++) {
-                Symbol toAdd = list.get(indexes.indexOf(now)).get(i);
-                if (!mark[indexes.indexOf(toAdd)]) {
+            for (int i = 0; i < list[now].size(); i++) {
+                int toAdd = list[now].get(i);
+                if (!mark[toAdd]) {
 
                     q.add(toAdd);
-                    mark[indexes.indexOf(toAdd)] = true;
+                    mark[toAdd] = true;
                 }
 
             }

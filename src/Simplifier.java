@@ -40,8 +40,8 @@ public class Simplifier {
 
 
         }
-        System.out.println("v1");
-        System.out.println(v1);
+//        System.out.println("v1");
+//        System.out.println(v1);
 
 
         final ArrayList<Production> gproductions = g.getProductions();
@@ -70,16 +70,25 @@ public class Simplifier {
 
 
         ArrayList<Variable> reachable = new ArrayList<>();
-        // reachable.add(g.getVariable().get(g.getStart()));
+        reachable.add(g.getVariable().get(g.getStart()));
 
         Graph graph = new Graph();
         graph.FromProductions(productions);
-        System.out.println(g.getVariable().get(g.start));
+        //   System.out.println("productions \n" + productions);
+//        for (int i = 0; i < graph.list.length; i++) {
+//
+//            System.out.print(graph.list[i]);
+//        }
+        // System.out.println(g.getVariable().get(g.start));
         for (int i = 0; i < g.getVariable().size(); i++) {
             if (graph.isPath(g.getVariable().get(g.start), g.getVariable().get(i))) {
                 reachable.add(g.getVariable().get(i));
             }
+//            else {
+//                System.out.println("no path to" + g.getVariable().get(i));
+//            }
         }
+        //   System.out.println("reachable" + reachable);
 
         ArrayList<Production> productions2 = new ArrayList<>();
         for (int i = 0; i < productions.size(); i++) {
@@ -101,11 +110,16 @@ public class Simplifier {
                 productions2.add(p);
             }
         }
+        ArrayList<Variable> intersect = new ArrayList<>();
+        for (int i = 0; i < v1.size(); i++) {
+            if (reachable.contains(v1.get(i))) {
+                intersect.add(v1.get(i));
+            }
+        }
+        // System.out.println("intersct " + intersect);
 
 
-
-
-        return new CFGrammar(v1, g.getTerminal(), v1.indexOf(g.getVariable().get(g.getStart())), productions2);
+        return new CFGrammar(intersect, g.getTerminal(), intersect.indexOf(g.getVariable().get(g.getStart())), productions2);
 
     }
 
@@ -157,7 +171,9 @@ public class Simplifier {
 
             ArrayList<Production> productions1 = generateProductionsDriver(vn, productions.get(i));
             for (Production production : productions1) {
-                newProductions.add(production);
+                if (!newProductions.contains(production)) {
+                    newProductions.add(production);
+                }
             }
         }
         return new CFGrammar(g.getVariable(), g.getTerminal(), g.getStart(), newProductions);
@@ -239,11 +255,11 @@ public class Simplifier {
         for (int i = 0; i < unitVars.size(); i++) {
             Symbol symbol = unitVars.get(i);
             AgoesTo.add(new ArrayList<>());
-            for (int i1 = 0; i1 < productions.size(); i1++) {
-                Production p = productions.get(i1);
-                if (graph.isPath(symbol, p.leftside)) {
+            for (int i1 = 0; i1 < unitVars.size(); i1++) {
+                Variable symbol1 = unitVars.get(i1);
+                if (graph.isPath(symbol, symbol1)) {
 
-                    AgoesTo.get(i).add(p.leftside);
+                    AgoesTo.get(i).add(symbol1);
                 }
 
 
@@ -282,11 +298,11 @@ public class Simplifier {
 
     public static CFGrammar simplify(CFGrammar g) {
         CFGrammar g1 = removeLambdaProduction(g);
-        //    System.out.println(g1);
+        //    System.out.println("lambda" + g1);
         CFGrammar g2 = removeUnit(g1);
-        //    System.out.println(g2);
+        //    System.out.println("unit" + g2);
         CFGrammar g3 = removeUseless(g2);
-        //   System.out.println(g3);
+        //    System.out.println("useless" + g3);
         return g3;
 
     }

@@ -5,9 +5,9 @@ import java.util.ArrayList;
  */
 public class Test {
     public static void main(String[] args) {
-
-        test3();
-        //   test2();
+        System.out.println((int)'a');
+        //  test3();
+        // test2();
         //       test1();
     }
 
@@ -15,10 +15,10 @@ public class Test {
         Production p = new Production('S', "ABaC");
         Production p2 = new Production('A', "BC");
         Production p3 = new Production('B', "b");
-        Production p4 = new Production('B', "!");
+        Production p4 = new Production('B', "l");
 
         Production p5 = new Production('C', "D");
-        Production p6 = new Production('C', "L");
+        Production p6 = new Production('C', "l");
         Production p7 = new Production('D', "d");
         ArrayList<Production> productions = new ArrayList<>();
         productions.add(p);
